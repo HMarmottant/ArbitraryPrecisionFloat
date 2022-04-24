@@ -24,7 +24,11 @@ uint floattobin(float x) {
 
 int main(int argc, char const *argv[])
 {
-    apfloat f (std::string("110000000000011010101101010101100000000000001"),8);
+    apfloat f (std::string("11010000000001101010110101011111011110101"),8);
     std::cout << f << std::endl;
+    // std::string str("1001011");
+    // bint a = bint(str);
+    // std::cout << a.test(0) << std::endl;
+    // std::cout << a << std::endl;
     return 0;
 }

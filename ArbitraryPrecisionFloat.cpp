@@ -3,20 +3,20 @@
 
 apfloat::apfloat(std::string initvalue, unsigned int size)
 {
-    sign = (bool)initvalue.at(initvalue.length()-1);
-    initvalue.erase(initvalue.length()-1);
+    sign = (bool)initvalue.at(0);
+    initvalue.erase(0,1);
 	float_segments = std::vector<bint>(size,0); 
-    int cnt = initvalue.length();
-    for(int i = float_segments.size()-1;i>=0;i--)
+    int cnt = 0;
+    for(int i = 0;i<float_segments.size();i++)
     {
-        cnt-=BINT_SIZE;
-        if(cnt<0)
+        
+        if(cnt+BINT_SIZE>initvalue.length())
         {
-            cnt+=BINT_SIZE;
-            float_segments.at(i) = bint(initvalue.substr(0,cnt));
+            float_segments.at(i) = bint(strflip(initvalue.substr(cnt,initvalue.length()-cnt)));
             break;
         } 
-        float_segments.at(i) = bint(initvalue.substr(cnt,BINT_SIZE));
+        float_segments.at(i) = bint(strflip(initvalue.substr(cnt,BINT_SIZE)));
+        cnt+=BINT_SIZE;
     }
 
     
@@ -49,10 +49,22 @@ bint addcarry(bint a, bint b, bool *carry)
 
 std::ostream& operator<<(std::ostream& os, const apfloat &A)
 {
+    os << A.sign << " ";
     for(int i = 0 ;i<A.float_segments.size();i++)
     {
-        os << A.float_segments.at(i) << " ";
+        for(int j = 0;j<BINT_SIZE;j++) os << A.float_segments[i].test(j);
+        os << " ";
     }
-    os << A.sign << std::endl;
+    os << std::endl;
     return os;
+}
+
+std::string strflip(std::string str)
+{
+    std::string tmp = str;
+    for(int i = 0;i<str.length();i++)
+    {
+        tmp[i] = str[str.length()-1-i];
+    }
+    return tmp;
 }

@@ -24,3 +24,5 @@ private:
 };
 
 bint addcarry(bint a, bint b, bool *carry);
+
+std::string strflip(std::string str);

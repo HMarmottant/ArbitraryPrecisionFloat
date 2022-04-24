@@ -3,7 +3,7 @@
 
 apfloat::apfloat(std::string initvalue, unsigned int size)
 {
-    sign = (bool)initvalue.at(0);
+    sign = initvalue.at(0) == '1';
     initvalue.erase(0,1);
 	float_segments = std::vector<bint>(size,0); 
     int cnt = 0;
@@ -35,7 +35,7 @@ apfloat operator+(const apfloat &A,const apfloat &B)
     bool carry = 0;
     for(int i = result.size();i>=0;i--)
     {
-        if(i<A.float_segments.size() && i<A.float_segments.size())
+        if(i<A.float_segments.size() && i<B.float_segments.size())
         {
             result.float_segments.at(i) = addcarry(A.float_segments.at(i),B.float_segments.at(i),&carry);
         }

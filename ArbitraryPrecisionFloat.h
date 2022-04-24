@@ -17,6 +17,7 @@ public:
  
 	friend apfloat operator+(const apfloat &A,const apfloat &B);
 	friend std::ostream& operator<<(std::ostream& os, const apfloat &A);
+	int size() {return float_segments.size();};
 
 private:
 	std::vector<bint> float_segments;
@@ -26,3 +27,5 @@ private:
 bint addcarry(bint a, bint b, bool *carry);
 
 std::string strflip(std::string str);
+
+std::string binttostr(bint a);

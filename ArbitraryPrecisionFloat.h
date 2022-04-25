@@ -6,17 +6,18 @@
 #define BINT_SIZE 32 //addcarry and subborrow need corection if modified
 
 typedef std::bitset<BINT_SIZE> bint;
-typedef long unsigned int luint;
-
 
 class apfloat
 {
 public:
 	apfloat(std::string initvalue, unsigned int size);
 	~apfloat();
- 
+	friend apfloat operator>>(const apfloat &A,uint shift);
+	friend apfloat operator<<(const apfloat &A,uint shift);
 	friend apfloat operator+(const apfloat &A,const apfloat &B);
 	friend apfloat operator-(const apfloat &A,const apfloat &B);
+	friend apfloat operator*(const apfloat &A,const apfloat &B);
+	friend apfloat operator/(const apfloat &A,const apfloat &B);
 	friend std::ostream& operator<<(std::ostream& os, const apfloat &A);
 	int size() {return float_segments.size();};
 	void flipsign() {sign=!sign;}

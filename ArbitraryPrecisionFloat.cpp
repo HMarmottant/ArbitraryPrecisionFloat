@@ -27,6 +27,40 @@ apfloat::~apfloat()
 
 }
 
+apfloat operator>>(const apfloat &A,uint shift)
+{
+    apfloat result("0",A.float_segments.size());
+    for(int i = result.float_segments.size()-1;i>=0;i--)
+    {
+        if((result.float_segments.size() > (i - (shift/BINT_SIZE))) && (0 <=  (i + (shift/BINT_SIZE))))
+        {
+            result.float_segments.at(i) |= (A.float_segments.at(i - (shift/BINT_SIZE))<<(shift%BINT_SIZE));
+        }
+        if((result.float_segments.size() > (i - (shift/BINT_SIZE) - 1)) && (0 <= (i + (shift/BINT_SIZE) - 1)))
+        {
+            result.float_segments.at(i) |= (A.float_segments.at(i - (shift/BINT_SIZE) - 1)<<(BINT_SIZE - (shift%BINT_SIZE)));
+        }
+    }
+    return result;
+}
+
+apfloat operator<<(const apfloat &A,uint shift)
+{
+    apfloat result("0",A.float_segments.size());
+    for(int i = result.float_segments.size()-1;i>=0;i--)
+    {
+        if((result.float_segments.size() > (i + (shift/BINT_SIZE))) && (0 <=  (i + (shift/BINT_SIZE))))
+        {
+            result.float_segments.at(i) |= (A.float_segments.at(i + (shift/BINT_SIZE))>>(shift%BINT_SIZE));
+        }
+        if((result.float_segments.size() > (i + (shift/BINT_SIZE) + 1)) && (0 <= (i + (shift/BINT_SIZE) + 1)))
+        {
+            result.float_segments.at(i) |= (A.float_segments.at(i + (shift/BINT_SIZE) + 1)<<(BINT_SIZE - (shift%BINT_SIZE)));
+        }
+    }
+    return result;
+}
+
 apfloat operator+(const apfloat &A,const apfloat &B)
 {
     apfloat result("0",0);
@@ -53,6 +87,7 @@ apfloat operator+(const apfloat &A,const apfloat &B)
             }
             //std::cout << carry << std::endl;
         }
+        if(A.sign) result.sign = 1;
     }
     else if( A.sign )//substraction algorithm with A negative
     {
@@ -112,6 +147,16 @@ apfloat operator-(const apfloat &A,const apfloat &B)
     return A + tmp; 
 }
 
+apfloat operator*(const apfloat &A,const apfloat &B)
+{
+
+}
+
+apfloat operator/(const apfloat &A,const apfloat &B) //long division
+{
+
+}
+
 bint addcarry(bint a, bint b, bool *carry)//add bint a and b with carry
 {
     bint res = 0;
@@ -164,14 +209,15 @@ bint subborrow(bint a, bint b, bool *borrow)//substract b from a with borrow
     return a;
 }
 
+
+
 std::ostream& operator<<(std::ostream& os, const apfloat &A)
 {
-    os << A.sign << " ";
+    os <<"Sign: "<< A.sign << " Bite values: ";
     for(int i = 0 ;i<A.float_segments.size();i++)
     {
-        os << binttostr(A.float_segments[i]) <<" ";
+        os << i <<"# "<< binttostr(A.float_segments[i]) <<" ";
     }
-    os << std::endl;
     return os;
 }
 

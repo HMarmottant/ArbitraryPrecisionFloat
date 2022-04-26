@@ -23,7 +23,7 @@ namespace apfloat
 		friend apfloat operator*(const apfloat &A,const apfloat &B);
 		friend apfloat operator/(const apfloat &A,const apfloat &B);
 		friend std::ostream& operator<<(std::ostream& os, const apfloat &A);
-		int size() {return float_segments.size();};
+		int size() const {return float_segments.size();};
 		void flipsign() {sign=!sign;}
 
 	private:

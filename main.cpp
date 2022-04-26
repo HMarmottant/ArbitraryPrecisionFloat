@@ -24,12 +24,11 @@ uint floattobin(float x) {
 
 int main(int argc, char const *argv[])
 {
-    apfloat::apfloat A (std::string("0000000000000000000000000000000111111111111111111111111111111111010000000000101000000000000000001"),3);
-    apfloat::apfloat B (std::string("1000000000000000000000000000000011"),2);
+    apfloat::apfloat A (std::string("100000000000000000000000000010100"),2);
+    apfloat::apfloat B (std::string("000000000000000000000000000000000011"),4);
     std::cout << A << std::endl;
     std::cout << B << std::endl;
-    A.sizechange(A.size()+2);
-    std::cout << A << std::endl;
+    std::cout << (A/B) << std::endl;
     // std::cout << B << std::endl;
     // std::cout << A + B << std::endl;
 

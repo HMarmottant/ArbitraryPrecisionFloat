@@ -86,8 +86,7 @@ namespace apfloat
     apfloat operator+(const apfloat &A,const apfloat &B)
     {
         apfloat result("0",0);
-        if(B.float_segments.size() > A.float_segments.size()) result = apfloat("0",B.float_segments.size());
-        else result = apfloat("0",A.float_segments.size());
+        result = apfloat("0",(A.size()>B.size())? A.size() : B.size());
         bool borrow = 0;//needed to check fo nagative result
         //addition algorithm
         if(!(A.sign^B.sign)) // check for same sign
@@ -177,8 +176,44 @@ namespace apfloat
 
     apfloat operator/(const apfloat &A,const apfloat &B) //long division of A by B
     {
-
-
+        int size = (A.size()>B.size())? 2*A.size() : 2*B.size();
+        apfloat q("0", 2*size );
+        apfloat r("0", 2*size);
+        fit(r,A);
+        r = r>>(size) * BINT_SIZE;
+        r.sign = B.sign;
+        // std::cout << r << std::endl;
+        apfloat tmp("0",q.size());
+        // bool resset = 0;
+        // std::cout << buff << std::endl;
+        for(int i = 0; i <q.size()*BINT_SIZE;i++)
+        {
+            // std::cout << "test" << std::endl;
+            r = r<<1;
+            tmp = r - B;
+            if(tmp.sign == r.sign)
+            {
+                // std::cout << i << std::endl;
+                r = tmp;
+                q.float_segments.at(i / BINT_SIZE).flip(i%BINT_SIZE);
+            }
+        }
+        q = q << ((size-1) * BINT_SIZE);
+        // std::cout << q << std::endl;
+        q.sizechange(size - (size/2));
+        if(A.sign^B.sign)//see if singns are diferent
+        {
+            r.sign = 1;
+            q.sign = 1;
+        }
+        else
+        {
+            r.sign = 0;
+            q.sign = 0;
+        }
+        // std::cout << q << std::endl;
+        // std::cout << r << std::endl;
+        return q;
     }
 
     bint addcarry(bint a, bint b, bool *carry)//add bint a and b with carry

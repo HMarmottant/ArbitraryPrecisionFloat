@@ -54,15 +54,16 @@ namespace apfloat
         apfloat result("0",A.float_segments.size());
         for(int i = result.float_segments.size()-1;i>=0;i--)
         {
-            if((result.float_segments.size() > (i - (shift/BINT_SIZE))) && (0 <=  (i + (shift/BINT_SIZE))))
+            if((result.float_segments.size() > (i - (shift/BINT_SIZE))) && (0 <=  (i - (shift/BINT_SIZE))))
             {
                 result.float_segments.at(i) |= (A.float_segments.at(i - (shift/BINT_SIZE))<<(shift%BINT_SIZE));
             }
-            if((result.float_segments.size() > (i - (shift/BINT_SIZE) - 1)) && (0 <= (i + (shift/BINT_SIZE) - 1)))
+            if((result.float_segments.size() > (i - (shift/BINT_SIZE) - 1)) && (0 <= (i - (shift/BINT_SIZE) - 1)))
             {
-                result.float_segments.at(i) |= (A.float_segments.at(i - (shift/BINT_SIZE) - 1)<<(BINT_SIZE - (shift%BINT_SIZE)));
+                result.float_segments.at(i) |= (A.float_segments.at(i - (shift/BINT_SIZE) - 1)>>(BINT_SIZE - (shift%BINT_SIZE)));
             }
         }
+        result.sign = A.sign;
         return result;
     }
 
@@ -80,6 +81,7 @@ namespace apfloat
                 result.float_segments.at(i) |= (A.float_segments.at(i + (shift/BINT_SIZE) + 1)<<(BINT_SIZE - (shift%BINT_SIZE)));
             }
         }
+        result.sign = A.sign;
         return result;
     }
 
@@ -170,8 +172,42 @@ namespace apfloat
 
     apfloat operator*(const apfloat &A,const apfloat &B)
     {
-
-
+        int size = (A.size()>B.size())? A.size() : B.size();
+        apfloat res("0",size+1);
+        apfloat mul("0",size+1);
+        fit(mul,B);
+        mul.sign = 0;
+        mul = (mul >> BINT_SIZE);
+        // std::cout << mul << std::endl;
+        int shift=0;
+        for(int i = 0; i <A.size()*BINT_SIZE;i++)
+        {
+            shift = BINT_SIZE - i;
+            // std::cout << shift << std::endl;
+            if(A.float_segments.at(i/BINT_SIZE).test(i%BINT_SIZE))
+            {
+                if(shift <0)
+                {
+                    res = res + (mul>>(-shift));
+                }
+                else
+                {
+                    res = res + (mul<<shift);
+                }
+            }
+        }
+        if(A.sign^B.sign)//see if singns are diferent
+        {
+            // std::cout << "b" << std::endl;
+            res.sign = 1;
+        }
+        else
+        {
+            // std::cout << "a" << std::endl;
+            res.sign = 0;
+        }
+        res = res << BINT_SIZE-1;
+        return res;
     }
 
     apfloat operator/(const apfloat &A,const apfloat &B) //long division of A by B
@@ -180,8 +216,8 @@ namespace apfloat
         apfloat q("0", 2*size );
         apfloat r("0", 2*size);
         fit(r,A);
-        r = r>>(size) * BINT_SIZE;
-        r.sign = B.sign;
+        r = r>>(size * BINT_SIZE);
+        r.sign = 0;
         // std::cout << r << std::endl;
         apfloat tmp("0",q.size());
         // bool resset = 0;
@@ -190,7 +226,7 @@ namespace apfloat
         {
             // std::cout << "test" << std::endl;
             r = r<<1;
-            tmp = r - B;
+            tmp = (B.sign)? r+B : r-B;
             if(tmp.sign == r.sign)
             {
                 // std::cout << i << std::endl;
@@ -199,7 +235,6 @@ namespace apfloat
             }
         }
         q = q << ((size-1) * BINT_SIZE);
-        // std::cout << q << std::endl;
         q.sizechange(size - (size/2));
         if(A.sign^B.sign)//see if singns are diferent
         {
@@ -294,6 +329,67 @@ namespace apfloat
     {
         std::string str = "";
         for(int j = 0;j<BINT_SIZE;j++) str += a.test(j)?"1":"0";
+        return str;
+    }
+
+    std::string apfloat::tobasestring(apfloat base)//returns number in base B as a string rounded down to a positive integer
+    {
+        std::string str = "";
+        apfloat correctbase = base;
+        correctbase.sizechange(1);
+        correctbase.sign = 0;
+
+        int size = (this->size()>correctbase.size())? this->size() : correctbase.size();
+        apfloat r("0", 2*size);
+        fit(r,*this);
+        r = r>>(size * BINT_SIZE);
+        r.sign = 0;
+        // std::cout << correctbase << std::endl;
+        correctbase.sizechange(size);
+        bool test = 1;
+        while (test)
+        {
+            test=0;
+            apfloat q("0", size);
+            apfloat tmp("0",2*size);
+            int lastbit = 0;
+            for (int i = 0; i < r.size()*BINT_SIZE; i++)
+            {
+                if( r.float_segments.at(i/BINT_SIZE).test(i%BINT_SIZE))
+                {
+                    lastbit = i;
+                }
+            }
+            // std::cout << (correctbase>>((size-1 )* BINT_SIZE)) << std::endl;
+            // std::cout << r << std::endl<< std::endl;
+            for(int i = 0; i <=lastbit - (size * BINT_SIZE);i++)
+            {
+                r = r<<1;
+                q = q<<1;
+                tmp = r-(correctbase>>((size-1 )* BINT_SIZE));
+                if(tmp.sign == r.sign)
+                {
+                    r = tmp;
+                    q.float_segments.at((size)-1).flip(BINT_SIZE-1);
+                }
+            }
+
+            std::cout << q << std::endl;
+            std::cout << r << std::endl;
+            apfloat charoffset = r;
+            std::cout << charoffset << std::endl;
+            str += static_cast<char>(48 + std::stoi(binttostr(r.float_segments.at(0)),nullptr,2));
+            r=q;
+            // std::cout << 48 + std::stoi(binttostr(charoffset.float_segments.at(0)),nullptr,2) << std::endl;
+            for (int i = 0; i < r.size(); i++)
+            {
+                if( r.float_segments.at(i).any())
+                {
+                    test = 0;
+                }
+            }
+        }
+
         return str;
     }
 }

@@ -24,12 +24,16 @@ uint floattobin(float x) {
 
 int main(int argc, char const *argv[])
 {
-    apfloat::apfloat A (std::string("000000000000000000000000110110111101101011010110001"),2);
-    apfloat::apfloat B (std::string("000000000000000000000000000001010"),2);
+    apfloat::apfloat A (std::string("000000000000000000000000110110111101101011010110001"),4);
+    apfloat::apfloat base (std::string("000000000000000000000000000001010"),1);
+    apfloat::apfloat C (std::string("0000000000000000000000001001110111111101011011110001"),4);
     std::cout << A << std::endl;
-    std::cout << B << std::endl;
+    std::cout << C << std::endl;
+    std::cout << base << std::endl;
     // std::cout << A.extendedRemainderDivSpecial(B) << std::endl;
-    std::cout << A.tobasestring(B) << std::endl;
+    std::cout << A.tobasestring(base) << std::endl;
+    std::cout << C.tobasestring(base) << std::endl;
+    std::cout << (A * C).tobasestring(base) << std::endl;
     // std::cout << A.getintegerpart() << std::endl;
     // std::cout << A.extendedRemainderDiv(B) << std::endl;
     // std::cout << A.extendedRemainderDivRest(B) << std::endl;

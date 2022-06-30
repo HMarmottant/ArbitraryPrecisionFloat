@@ -23,14 +23,19 @@ namespace apfloat
 		friend apfloat operator*(const apfloat &A,const apfloat &B);
 		friend apfloat operator/(const apfloat &A,const apfloat &B);
 		friend std::ostream& operator<<(std::ostream& os, const apfloat &A);
+		apfloat extendedRemainderDivRest(apfloat B);
+		apfloat extendedRemainderDiv(apfloat D);
 		std::string tobasestring(apfloat base);
+		int getintegerpart();
 		int size() const {return float_segments.size();};
 		void flipsign() {sign=!sign;}
+		bool null();
 
 	private:
 		std::vector<bint> float_segments;
 		bool sign;
 	};
+
 
 	bint addcarry(bint a, bint b, bool *carry);//add bint a and b with carry
 

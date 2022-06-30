@@ -24,7 +24,7 @@ namespace apfloat
 
     apfloat::~apfloat()
     {
-
+        
     }
 
     void fit(apfloat &A,const apfloat &B)//fits the given variable into the space of this one conserving size may lead to loss of precision if A is smaller than B
@@ -212,7 +212,7 @@ namespace apfloat
 
     apfloat operator/(const apfloat &A,const apfloat &B) //long division of A by B
     {
-        int size = (A.size()>B.size())? 2*A.size() : 2*B.size();
+        int size = (A.size()>B.size())? A.size() : B.size();
         apfloat q("0", 2*size );
         apfloat r("0", 2*size);
         fit(r,A);
@@ -222,7 +222,7 @@ namespace apfloat
         apfloat tmp("0",q.size());
         // bool resset = 0;
         // std::cout << buff << std::endl;
-        for(int i = 0; i <q.size()*BINT_SIZE;i++)
+        for(int i = 0; i <2*size*BINT_SIZE;i++)
         {
             // std::cout << "test" << std::endl;
             r = r<<1;
@@ -235,7 +235,7 @@ namespace apfloat
             }
         }
         q = q << ((size-1) * BINT_SIZE);
-        q.sizechange(size - (size/2));
+        q.sizechange(size);
         if(A.sign^B.sign)//see if singns are diferent
         {
             r.sign = 1;
@@ -247,10 +247,143 @@ namespace apfloat
             q.sign = 0;
         }
         // std::cout << q << std::endl;
-        // std::cout << r << std::endl;
         return q;
     }
 
+    apfloat apfloat::extendedRemainderDiv(apfloat B)
+    {
+        int size = B.size();
+        apfloat q("0", 2*size );
+        apfloat r("0", 2*size);
+
+
+        //find last non zero bit
+        // int lastbit = 0;
+        // for(int i = 0; i <B.size();i++)
+        // {
+        //     for(int off = 0;off< BINT_SIZE;off++)
+        //     {
+        //         if(B.float_segments.at(i).test(off))
+        //         {
+        //             lastbit = i * BINT_SIZE + off;
+        //         }
+        //     }
+            
+        // }
+        // std::cout << size << std::endl;
+
+        fit(r,*this);
+        r = r>>(size * BINT_SIZE);
+        r.sign = 0;
+        // std::cout << r << std::endl;
+        apfloat tmp("0",q.size());
+        // bool resset = 0;
+        
+        for(int i = 0; i <  size*BINT_SIZE ;i++)
+        {
+            r = r<<1;
+            // std::cout << "test" << std::endl;
+            tmp = (B.sign)? r+B : r-B;
+            // std::cout << i << std::endl;
+            // std::cout << q << std::endl;
+            // std::cout << r << std::endl;
+            // std::cout << tmp << std::endl;
+            if(tmp.sign == r.sign)
+            {
+                r = tmp;
+                q.float_segments.at(i / BINT_SIZE).flip(i%BINT_SIZE);
+            }
+        }
+
+        // std::cout << q << std::endl;
+        // std::cout << r << std::endl;
+        
+        q = q << ((size-1) * BINT_SIZE);
+        q.sizechange(size);
+
+        // r.sizechange(size);
+        if((*this).sign^B.sign)//see if singns are diferent
+        {
+            r.sign = 1;
+            q.sign = 1;
+        }
+        else
+        {
+            r.sign = 0;
+            q.sign = 0;
+        }
+
+        return q;
+    }
+
+
+    apfloat apfloat::extendedRemainderDivRest(apfloat B)
+    {
+        int size = B.size();
+        apfloat q("0", 2*size );
+        apfloat r("0", 2*size);
+
+
+        //find last non zero bit
+        // int lastbit = 0;
+        // for(int i = 0; i <B.size();i++)
+        // {
+        //     for(int off = 0;off< BINT_SIZE;off++)
+        //     {
+        //         if(B.float_segments.at(i).test(off))
+        //         {
+        //             lastbit = i * BINT_SIZE + off;
+        //         }
+        //     }
+            
+        // }
+        // std::cout << size << std::endl;
+
+        fit(r,*this);
+        r = r>>(size * BINT_SIZE);
+        r.sign = 0;
+        // std::cout << r << std::endl;
+        apfloat tmp("0",q.size());
+        // bool resset = 0;
+        
+        for(int i = 0; i <  size*BINT_SIZE ;i++)
+        {
+            r = r<<1;
+            // std::cout << "test" << std::endl;
+            tmp = (B.sign)? r+B : r-B;
+            // std::cout << i << std::endl;
+            // std::cout << q << std::endl;
+            // std::cout << r << std::endl;
+            // std::cout << tmp << std::endl;
+            if(tmp.sign == r.sign)
+            {
+                r = tmp;
+                q.float_segments.at(i / BINT_SIZE).flip(i%BINT_SIZE);
+            }
+        }
+
+        // std::cout << q << std::endl;
+        // std::cout << r << std::endl;
+        
+        // q = q << ((size-1) * BINT_SIZE);
+        // q.sizechange(size);
+
+        r.sizechange(size);
+        if((*this).sign^B.sign)//see if singns are diferent
+        {
+            r.sign = 1;
+            q.sign = 1;
+        }
+        else
+        {
+            r.sign = 0;
+            q.sign = 0;
+        }
+
+        return r;
+    }
+
+  
     bint addcarry(bint a, bint b, bool *carry)//add bint a and b with carry
     {
         bint res = 0;
@@ -334,62 +467,55 @@ namespace apfloat
 
     std::string apfloat::tobasestring(apfloat base)//returns number in base B as a string rounded down to a positive integer
     {
-        std::string str = "";
+        int size = (*this).size();
+        std::string strint = "";
+        std::string strdec = "";
+
         apfloat correctbase = base;
         correctbase.sizechange(1);
         correctbase.sign = 0;
+        if(correctbase.null()) return "";
 
-        int size = (this->size()>correctbase.size())? this->size() : correctbase.size();
-        apfloat r("0", 2*size);
-        fit(r,*this);
-        r = r>>(size * BINT_SIZE);
-        r.sign = 0;
-        // std::cout << correctbase << std::endl;
-        correctbase.sizechange(size);
-        bool test = 1;
-        while (test)
+        apfloat temp = *this;
+        temp.sizechange(1);
+        // std::cout << temp << std::endl;
+        while(!temp.null())        
         {
-            test=0;
-            apfloat q("0", size);
-            apfloat tmp("0",2*size);
-            int lastbit = 0;
-            for (int i = 0; i < r.size()*BINT_SIZE; i++)
-            {
-                if( r.float_segments.at(i/BINT_SIZE).test(i%BINT_SIZE))
-                {
-                    lastbit = i;
-                }
-            }
-            // std::cout << (correctbase>>((size-1 )* BINT_SIZE)) << std::endl;
-            // std::cout << r << std::endl<< std::endl;
-            for(int i = 0; i <=lastbit - (size * BINT_SIZE);i++)
-            {
-                r = r<<1;
-                q = q<<1;
-                tmp = r-(correctbase>>((size-1 )* BINT_SIZE));
-                if(tmp.sign == r.sign)
-                {
-                    r = tmp;
-                    q.float_segments.at((size)-1).flip(BINT_SIZE-1);
-                }
-            }
-
-            std::cout << q << std::endl;
-            std::cout << r << std::endl;
-            apfloat charoffset = r;
-            std::cout << charoffset << std::endl;
-            str += static_cast<char>(48 + std::stoi(binttostr(r.float_segments.at(0)),nullptr,2));
-            r=q;
-            // std::cout << 48 + std::stoi(binttostr(charoffset.float_segments.at(0)),nullptr,2) << std::endl;
-            for (int i = 0; i < r.size(); i++)
-            {
-                if( r.float_segments.at(i).any())
-                {
-                    test = 0;
-                }
-            }
+            strint += ('0' + temp.extendedRemainderDivRest(correctbase).getintegerpart());
+            temp = temp.extendedRemainderDiv(correctbase);
         }
 
-        return str;
+        temp = *this;
+        temp = (temp << BINT_SIZE) >> BINT_SIZE;
+        // std::cout <<"tamp"<< temp << std::endl;
+
+        while(!temp.null())        
+        {
+            // std::cout <<"temp" << temp << std::endl;
+
+            temp = temp * correctbase;
+
+            // std::cout <<"temp10" << temp << std::endl;
+
+            strdec += ('0' + temp.getintegerpart());
+            temp = (temp << BINT_SIZE) >> BINT_SIZE;
+        }
+
+        return strflip(strint) + "," + strdec;
+    }
+
+    bool apfloat::null()
+    {
+        for(int i = 0 ; i < (*this).size();i++)
+        {
+            if((*this).float_segments.at(i).any())
+                return 0;
+        }
+        return 1;
+    }
+
+    int apfloat::getintegerpart()
+    {
+        return stoi(strflip((*this).float_segments.at(0).to_string()),0,2);
     }
 }

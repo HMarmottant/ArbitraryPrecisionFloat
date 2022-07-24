@@ -13,6 +13,7 @@ namespace apfloat
 	{
 	public:
 		apfloat(std::string initvalue, unsigned int size);
+		apfloat(std::string initvalue, unsigned int size, apfloat base);
 		~apfloat();
 		friend void fit(apfloat &A,const apfloat &B);
 		void sizechange(int size);//change size this gets rid or increases the least significant bit(left most)

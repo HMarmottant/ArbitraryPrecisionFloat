@@ -22,6 +22,83 @@ namespace apfloat
         
     }
 
+    apfloat::apfloat(std::string initvalue, unsigned int size, apfloat base)
+    {
+        int i = 0;
+        int comma_index;
+        int val = 0;
+        apfloat one (std::string("000000000000000000000000000000001"),1);
+        apfloat temp (std::string("0"),size);
+
+        bool tempsign = initvalue.at(0) == '-';
+        if(tempsign) initvalue.erase(0,1);
+        sign = 0;
+        
+
+        float_segments = std::vector<bint>(size,0); 
+
+        apfloat correctbase = base;
+        correctbase.sizechange(1);
+        correctbase.sign = 0;
+        if(correctbase.null())  return;
+
+        while ( i < initvalue.size() && initvalue.at(i) != ',')
+        {
+            *this = *this * base;
+
+            val = initvalue.at(i);
+
+            if(initvalue.at(i) - '0' > 0  && initvalue.at(i) - '0' < 10)
+            {
+                for(int j = 0; j < val - '0'; j++)
+                {
+                    *this = *this + one;
+                }
+            }
+            else
+            {
+                for(int j = 0; j < val - 'A' + 9; j++)
+                {
+                    *this = *this + one;
+                }
+            }
+
+            i++;
+        }
+
+        comma_index = i;
+        i = initvalue.size() - 1;
+
+        while ( i > comma_index)
+        {
+
+            val = initvalue.at(i);
+
+            if(initvalue.at(i) - '0' > 0  && initvalue.at(i) - '0' < 10)
+            {
+                for(int j = 0; j < val - '0'; j++)
+                {
+                    temp = temp + one;
+                }
+            }
+            else
+            {
+                for(int j = 0; j < val - 'A' + 9; j++)
+                {
+                    temp = temp + one;
+                }
+            }
+
+            temp = temp / base;
+            i--;
+        }
+
+        *this = *this + temp;
+
+        sign = tempsign;
+        
+    }
+
     apfloat::~apfloat()
     {
         
@@ -470,6 +547,7 @@ namespace apfloat
         int size = (*this).size();
         std::string strint = "";
         std::string strdec = "";
+        int digit = 0;
 
         apfloat correctbase = base;
         correctbase.sizechange(1);
@@ -481,7 +559,16 @@ namespace apfloat
         // std::cout << temp << std::endl;
         while(!temp.null())        
         {
-            strint += ('0' + temp.extendedRemainderDivRest(correctbase).getintegerpart());
+            digit =  temp.extendedRemainderDivRest(correctbase).getintegerpart();
+            if(digit < 10)
+            {
+                strint += ('0' + digit);
+            }
+            else
+            {
+                strint += ('A' + digit - 9);
+            }
+            
             temp = temp.extendedRemainderDiv(correctbase);
         }
 
@@ -496,10 +583,21 @@ namespace apfloat
             temp = temp * correctbase;
 
             // std::cout <<"temp10" << temp << std::endl;
+            digit = temp.getintegerpart();
 
-            strdec += ('0' + temp.getintegerpart());
+            if(digit < 10)
+            {
+                strdec += ('0' + digit);
+            }
+            else
+            {
+                strdec += ('A' + digit - 9);
+            }
+
             temp = (temp << BINT_SIZE) >> BINT_SIZE;
         }
+
+        if((*this).sign) strint += '-';
 
         return strflip(strint) + "," + strdec;
     }

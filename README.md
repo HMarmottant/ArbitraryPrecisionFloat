@@ -1,4 +1,4 @@
 # ArbitraryPrecisionFloat
-Made a class that cold have as much decimals as i wanted.
+Made a class that could have as much decimals as i wanted.
 It is badly implemented and inneficient but works.
-It therefore servs more as a proof of concept tahnt a usable class.
+It therefore serves more as a proof of concept than a usable class.

@@ -23,10 +23,10 @@ uint floattobin(float x) {
 
 int main(int argc, char const *argv[])
 {
-    apfloat::apfloat base (std::string("000000000000000000000000000001010"),1);
-    apfloat::apfloat A (std::string("-42,75"),4,base);
+    // apfloat::apfloat base (std::string("000000000000000000000000000001010"),1);
+    apfloat::apfloat A (std::string("-42,75"),4,BASE10APF);
     std::cout << A << std::endl;
-    std::cout << A.tobasestring(base) << std::endl;
+    std::cout << A.tobasestring(BASE10APF) << std::endl;
 
     // apfloat::apfloat A (std::string("000000000000000000000000110110111101101011010110001"),4);
     

@@ -4,6 +4,13 @@
 #include <string>
 #include <iostream>
 
+typedef unsigned int uint;
+
+struct extendedFloatArray {
+	uint size;
+	uint* array;
+};
+
 namespace apfloat
 {
 	#define BINT_SIZE 32 //addcarry and subborrow need corection if modified
@@ -31,6 +38,7 @@ namespace apfloat
 		int size() const {return float_segments.size();};
 		void flipsign() {sign=!sign;}
 		bool null();
+		extendedFloatArray getasuintarray();
 
 	private:
 		std::vector<bint> float_segments;

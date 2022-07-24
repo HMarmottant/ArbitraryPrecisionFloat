@@ -616,4 +616,18 @@ namespace apfloat
     {
         return stoi(strflip((*this).float_segments.at(0).to_string()),0,2);
     }
+
+    extendedFloatArray apfloat::getasuintarray()
+    {
+        uint* array = (uint*)malloc(sizeof(uint) * (*this).size());
+        uint* temp = array;
+        for (int i = 0; i < (*this).size(); i++)
+        {
+            *temp = stoi(strflip((*this).float_segments.at(i).to_string()), 0, 2);
+            temp++;
+        }
+
+        return extendedFloatArray{ (uint)(*this).size(),array };
+    }
+    
 }

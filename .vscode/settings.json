@@ -46,7 +46,8 @@
     "functional": "cpp",
     "iterator": "cpp",
     "numeric": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "xstring": "cpp"
   },
   "git.ignoreLimitWarning": true,
   "C_Cpp_Runner.cCompilerPath": "gcc",

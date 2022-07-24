@@ -42,7 +42,7 @@ namespace apfloat
         correctbase.sign = 0;
         if(correctbase.null())  return;
 
-        while ( i < initvalue.size() && initvalue.at(i) != ',')
+        while ( i < initvalue.size() && initvalue.at(i) != '.')
         {
             *this = *this * base;
 
@@ -68,29 +68,31 @@ namespace apfloat
 
         comma_index = i;
         i = initvalue.size() - 1;
-
-        while ( i > comma_index)
-        {
-
-            val = initvalue.at(i);
-
-            if(initvalue.at(i) - '0' > 0  && initvalue.at(i) - '0' < 10)
+        if(comma_index != initvalue.size())
+        {    
+            while ( i > comma_index)
             {
-                for(int j = 0; j < val - '0'; j++)
-                {
-                    temp = temp + one;
-                }
-            }
-            else
-            {
-                for(int j = 0; j < val - 'A' + 9; j++)
-                {
-                    temp = temp + one;
-                }
-            }
 
-            temp = temp / base;
-            i--;
+                val = initvalue.at(i);
+
+                if(initvalue.at(i) - '0' > 0  && initvalue.at(i) - '0' < 10)
+                {
+                    for(int j = 0; j < val - '0'; j++)
+                    {
+                        temp = temp + one;
+                    }
+                }
+                else
+                {
+                    for(int j = 0; j < val - 'A' + 9; j++)
+                    {
+                        temp = temp + one;
+                    }
+                }
+
+                temp = temp / base;
+                i--;
+            }
         }
 
         *this = *this + temp;
@@ -596,10 +598,11 @@ namespace apfloat
 
             temp = (temp << BINT_SIZE) >> BINT_SIZE;
         }
-
+        if(strint.empty()) strint = "0";
+        if(strdec.empty()) strdec = "0";
         if((*this).sign) strint += '-';
 
-        return strflip(strint) + "," + strdec;
+        return strflip(strint) + "." + strdec;
     }
 
     bool apfloat::null()
@@ -627,7 +630,7 @@ namespace apfloat
             temp++;
         }
 
-        return extendedFloatArray{ (uint)(*this).size(),array };
+        return extendedFloatArray{ (uint)(*this).size(),(*this).sign,array};
     }
     
 }

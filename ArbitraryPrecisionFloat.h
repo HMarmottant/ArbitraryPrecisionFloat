@@ -6,15 +6,17 @@
 
 typedef unsigned int uint;
 
-#define BASE10APF  (apfloat::apfloat(std::string("000000000000000000000000000001010"),1))
 
 struct extendedFloatArray {
 	uint size;
+	bool sign;
 	uint* array;
 };
 
 namespace apfloat
 {
+	#define BASE10APF  (apfloat::apfloat(std::string("000000000000000000000000000001010"),1))
+	
 	#define BINT_SIZE 32 //addcarry and subborrow need corection if modified
 	typedef std::bitset<BINT_SIZE> bint;
 

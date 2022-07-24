@@ -23,10 +23,38 @@ uint floattobin(float x) {
 
 int main(int argc, char const *argv[])
 {
-    // apfloat::apfloat base (std::string("000000000000000000000000000001010"),1);
-    apfloat::apfloat A (std::string("-42,75"),4,BASE10APF);
-    std::cout << A << std::endl;
-    std::cout << A.tobasestring(BASE10APF) << std::endl;
+    // double f = 1;
+    // double e = 0;
+    // for(int i =0;i<50;i++)
+    // {
+    //     e = e + (1/f);
+    //     f = f * (i +1);
+    //     std::cout << printf("%1.32f",e) << std::endl; 
+    // }   
+
+    apfloat::apfloat base (std::string("000000000000000000000000000001010"),1);
+    apfloat::apfloat e (std::string("0"),16,BASE10APF);
+    apfloat::apfloat one (std::string("1.0"),16,BASE10APF);
+    apfloat::apfloat n = one;
+    apfloat::apfloat inv_facto = one;
+    // std::cout << e.tobasestring(BASE10APF) << std::endl;
+
+    // std::cout << one.tobasestring(BASE10APF) << std::endl;
+
+    for(int i =0;i<50;i++)
+    {
+        e = e + inv_facto;
+        inv_facto = inv_facto / n;
+        n = n + one;
+        std::cout << e.tobasestring(BASE10APF) << std::endl;
+        // std::cout << n.tobasestring(BASE10APF) << std::endl;
+        // std::cout << facto.tobasestring(BASE10APF) << std::endl << std::endl;
+    }
+
+    // std::cout << A << std::endl;
+
+    // std::cout << std::to_string(test);
+
 
     // apfloat::apfloat A (std::string("000000000000000000000000110110111101101011010110001"),4);
     

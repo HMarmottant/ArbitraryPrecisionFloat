@@ -622,12 +622,11 @@ namespace apfloat
 
     extendedFloatArray apfloat::getasuintarray()
     {
-        uint* array = (uint*)malloc(sizeof(uint) * (*this).size());
+        uint* array = new uint[(*this).size()];
         uint* temp = array;
         for (int i = 0; i < (*this).size(); i++)
         {
-            *temp = stoi(strflip((*this).float_segments.at(i).to_string()), 0, 2);
-            temp++;
+            temp[i] = stoul(strflip((*this).float_segments.at(i).to_string()), 0, 2);
         }
 
         return extendedFloatArray{ (uint)(*this).size(),(*this).sign,array};

@@ -37,6 +37,8 @@ int main(int argc, char const *argv[])
     apfloat::apfloat one (std::string("1.0"),16,BASE10APF);
     apfloat::apfloat n = one;
     apfloat::apfloat inv_facto = one;
+
+    extendedFloatArray st = e.getasuintarray();
     // std::cout << e.tobasestring(BASE10APF) << std::endl;
 
     // std::cout << one.tobasestring(BASE10APF) << std::endl;
